@@ -1,0 +1,240 @@
+* Generelles
+Die Schnittstelle von QuickPool (QP) basiert fast komplett auf REST mit einer kleinen Ausnahme, welche GraphQL verwendet.
+Zur kommunikation mit dem Server muss stets ein Token (JWT) mitgeschickt werden, welche den Benutzer eindeutig identifiziert.
+Es bestehen keine App-Tokens, der Login muss mit den Credentials von existierenden und freigeschalteten Benutzern passieren.
+Wie bei JWT üblich, wird ebenfalls einmalig ein Reset-Token mitgeliefert, welches nach Ablauf der Gültigkeit des Tokens verwendet wird um ein neues Tokenpaar zu erhalten.
+
+* Login
+Wie oben erwähnt funktioniert das Login mit Username und Passwort. Daraufhin werden die wichtigen Informationen, wie Tokenpaar und genauere Angaben zur Person zurückgeschickt.
+#+begin_src bash
+curl -XPOST 'https://api.quickpool.ch/api/v1/auth/login' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'email=<your@email.com>' \
+--data-urlencode 'password=<yourPW>'
+#+end_src
+
+Das Resultat wird in etwas so aussehen:
+
+#+begin_src json
+{
+	"id": 1,
+	"email": "<your@email.com",
+	"role": "admin",
+	"avatar": "",
+	"first_name": "Alex",
+	"last_name": "Mihov",
+	"client_name": null,
+	"color": "#FF0000",
+	"token": "eyJhbGciOiJIUzI1NiJ9.asdas......",
+	"refresh_token": "eyJhbGciOiJIUzI1NiJ9.e234....",
+	"account": {
+		"id": 1,
+		"name": "Quickshift",
+		"logo": "https://api.quickpool.ch/api/v1/s3/show/quickshift/public/logos/c040c358-c838-4443-ae40-a6fcd9b44c0b-Ardeo-Logo-Symbol.png",
+		"email": "info@ardeo.ch",
+		"contact_name": "Ardeo GmbH",
+		"phone": "079 612 02 84",
+		"channel": "aaaaaaaa-bbbb-bbbb-cccc-f7550b7a1105"
+	},
+	"person_id": 1,
+	"client_id": null,
+	"config": {
+		"i18n": {
+			"de": {
+				"app": {},
+				"web": {},
+				"general": "{}"
+			},
+			"en": {
+				"app": {},
+				"web": {},
+				"general": {}
+			}
+		},
+		"features": {
+			"tags": {
+				"app": {},
+				"web": {},
+				"general": {
+					"enabled": true,
+					"navigation": "visible",
+					"navigation_index": 7
+				}
+			},
+			"user": {
+				"app": {},
+				"web": {},
+				"general": {
+					"enabled": true,
+					"navigation": "visible",
+					"navigation_index": 0
+				}
+			},
+			"groups": {
+				"app": {},
+				"web": {},
+				"general": {
+					"enabled": false,
+					"navigation": "hidden",
+					"navigation_index": 8
+				}
+			},
+			"people": {
+				"app": {},
+				"web": {},
+				"general": {
+					"enabled": true,
+					"navigation": "visible",
+					"navigation_index": 4
+				}
+			},
+			"shifts": {
+				"app": {},
+				"web": {},
+				"general": {
+					"enabled": true,
+					"navigation": "visible",
+					"navigation_index": 2
+				}
+			},
+			"account": {
+				"app": {},
+				"web": {},
+				"general": {
+					"enabled": true,
+					"navigation": "visible",
+					"navigation_index": 10
+				}
+			},
+			"clients": {
+				"app": {},
+				"web": {},
+				"general": {
+					"enabled": true,
+					"navigation": "visible",
+					"navigation_index": 5
+				}
+			},
+			"reports": {
+				"app": {},
+				"web": {},
+				"general": {
+					"enabled": false,
+					"navigation": "hidden",
+					"navigation_index": 2
+				}
+			},
+			"projects": {
+				"app": {},
+				"web": {},
+				"general": {
+					"enabled": false,
+					"navigation": "hidden",
+					"navigation_index": 6
+				}
+			},
+			"skribble": {
+				"app": {},
+				"web": {},
+				"general": {
+					"enabled": true,
+					"navigation": "hidden",
+					"navigation_index": 0
+				}
+			},
+			"dashboard": {
+				"app": {},
+				"web": {},
+				"general": {
+					"enabled": true,
+					"first_view": true,
+					"navigation": "visible",
+					"navigation_index": 1
+				}
+			},
+			"documents": {
+				"app": {},
+				"web": {},
+				"general": {
+					"enabled": true,
+					"navigation": "visible",
+					"navigation_index": 9
+				}
+			},
+			"templates": {
+				"app": {},
+				"web": {},
+				"general": {
+					"enabled": true,
+					"navigation": "visible",
+					"navigation_index": 3
+				}
+			},
+			"availabilities": {
+				"app": {},
+				"web": {},
+				"general": {
+					"enabled": true,
+					"navigation": "visible",
+					"navigation_index": 6
+				}
+			},
+			"export_outlook": {
+				"app": {},
+				"web": {},
+				"general": {
+					"enabled": true,
+					"navigation": "hidden",
+					"navigation_index": 20
+				}
+			},
+			"import_outlook": {
+				"app": {},
+				"web": {},
+				"general": {
+					"enabled": true,
+					"navigation": "hidden",
+					"navigation_index": 20
+				}
+			},
+			"weekly-templates": {
+				"app": {},
+				"web": {},
+				"general": {
+					"enabled": true,
+					"navigation": "visible",
+					"navigation_index": 3
+				}
+			},
+			"digital_signature": {
+				"app": {},
+				"web": {},
+				"general": {
+					"enabled": true,
+					"navigation": "hidden",
+					"navigation_index": 20
+				}
+			},
+			"automatic_assignment": {
+				"app": {},
+				"web": {},
+				"general": {
+					"config": {
+						"max_computation_seconds": 120
+					},
+					"enabled": true,
+					"navigation": "hidden",
+					"navigation_index": 20
+				}
+			}
+		},
+		"public_config": {
+			"default_language": "de",
+			"availability_mode": "presence",
+			"worktime_signature": "optional",
+			"automatically_confirm_shifts": false
+		}
+	}
+}
+
+#+end_src
