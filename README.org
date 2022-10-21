@@ -6,19 +6,19 @@ Wie bei JWT üblich, wird ebenfalls einmalig ein Reset-Token mitgeliefert, welch
 
 ** CRUD
 Fast alle Models haben zumindest die folgenden REST Endpunkte:
-| Methode | Pfad         | Beschreibung                                                                                                                                                                                  |
-|---------+--------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| GET     | /<model>     | Gibt einen Index zurück, welcher gefiltert, sortiert, eingegrenzt und paginated ist                                                                                                           |
-| GET     | /<model>/:id | Gibt genau einen Eintrag zurück, sofern man berechtigt ist                                                                                                                                    |
-| POST    | /<model>     | Erstellt einen neuen Eintrag, sofern die Parameter korrekt sind und gibt den kompletten Datensatz zurück                                                                                      |
-| PUT     | /<model>/:id | Führt einen Update auf den Eintrag durch, sofern dieser existiert. Nur Felder, welche übergeben wurden, werden geändert. Gibt den kompletten, aktualisierten Datensatz zurück                 |
-| DELETE  | /<model>/:id | Führt einen Softdelete (inactive -> true) aus, sofern der Datensatz existiert. Mehrere Deletes auf dem gleichen Datensatz haben keinen negativen Effekt. Gibt den kompletten Datensatz zurück |
+| Methode | Pfad           | Beschreibung                                                                                                                                                                                  |
+|---------+----------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| GET     | =/<model>=     | Gibt einen Index zurück, welcher gefiltert, sortiert, eingegrenzt und paginated ist                                                                                                           |
+| GET     | =/<model>/:id= | Gibt genau einen Eintrag zurück, sofern man berechtigt ist                                                                                                                                    |
+| POST    | =/<model>=     | Erstellt einen neuen Eintrag, sofern die Parameter korrekt sind und gibt den kompletten Datensatz zurück                                                                                      |
+| PUT     | =/<model>/:id= | Führt einen Update auf den Eintrag durch, sofern dieser existiert. Nur Felder, welche übergeben wurden, werden geändert. Gibt den kompletten, aktualisierten Datensatz zurück                 |
+| DELETE  | =/<model>/:id= | Führt einen Softdelete (inactive -> true) aus, sofern der Datensatz existiert. Mehrere Deletes auf dem gleichen Datensatz haben keinen negativen Effekt. Gibt den kompletten Datensatz zurück |
 
 Wie oben erwähnt wird die Sichtbarkeit durch das Token ermittelt und auch parameterlose Aufrufe auf den Index werden Informationen zurückgeben.
 
 ** Queries
 Jede Index Abfrage kann mit einem optionalen Query-Parameter =q= versehen werden, welche es erlaubt auf fast allen Feldern zu filtern.
-Hier ein Beispiel wie man Shifts filtern kann:
+Hier ein Beispiel wie man Schichten filtern kann:
 #+begin_src json
 {
   "clients": { "id": [1] },
@@ -284,14 +284,97 @@ Das Resultat wird in etwa so aussehen:
 Eine Person beinhaltet die wichtigen Infos von Personen, welche in QP verwendet werden. Die E-Mail-Adresse der Person ist meistens dieselbe wie diejenige des Users, welcher stets der Person angeknüpft ist,
 das ist allerdings nicht ein muss.
 Personen werden erstellt, damit man die Mitarbeiter der Firma darstellen kann. Dabei wird für jeden Mitarbeiter, egal ob Administrator oder nicht, ein neuer Eintrag erstellt.
+** Model
+#+begin_src json
+{
+  "id": 1,
+  "avatar": "",
+  "first_name": "Martin",
+  "last_name": "Pfister",
+  "email": "martin.pfister@ardeo.ch",
+  "date_of_birth": "1941-01-17",
+  "gender": "male",
+  "mobile": "+41 79 111 22 33",
+  "street_name": "Zürcherstrasse",
+  "house_number": "87",
+  "address_details": "",
+  "postal_code": "8000",
+  "city": "Zürich",
+  "country": "CH",
+  "nationality": "CH",
+  "residence_permit": null,
+  "type_of_salary": "hourly",
+  "hourly_rate": 1000.0,
+  "salary": null,
+  "color": "#FF0000",
+  "admin": false,
+  "IBAN": "GB33BUKB20201555555555",
+  "account_id": 1,
+  "user_id": 1,
+  "notes": "Martin is a great employee",
+  "created_at": "2020-08-31T12:16:59.016Z",
+  "updated_at": "2022-09-16T10:34:10.842Z",
+  "inactive": false,
+  "marital_status": "single",
+  "nr_of_kids": 0,
+  "religion": "atheist",
+  "entrance_date": "2020-08-07",
+  "ahv_number": "756.1234.5678.90",
+  "bank_name": "Zürcher Kantonal Bank",
+  "budget_id": 1,
+  "custom_values": {
+    "ma_kategorie": "Höhere Berufsbildung (HF)"
+  },
+  "short_name": "Tinu"
+}
+#+end_src
 
+** Angehängte Entitäten
 Den Personen kann folgendes angehängt werden:
 
 | Model       | Beschreibung                                                                                                                                                            |
 |-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Tag         | Tags werden verwendet um Qualifikationen und ähnliches anzuhängen. Diese werden danach ebenfalls an Kunden und Schichten angehängt damit das Matching stattfinden kann. |
+| Tag         | Tags werden verwendet um Qualifikationen und ähnliches anzuhängen. Diese werden ebenfalls an Kunden und Schichten angehängt damit das Matching stattfinden kann. |
 | Client      | Clients stellen die Kunden oder generell die Arbeitsbereiche dar, an denen Schichten zugeteilt werden können. Diese werden ebenfalls für das Matching verwendet         |
 | Budget      | Budgets stellen die Arbeitszeit pro Monat/Woche/Tag welche der Person zugeteilt werden soll dar                                                                         |
 | Fileuploads | Es können mehrere Files einer Person angehängt werden, welche einerseits von QP verwendet werden (Anzeigebild, Vertrag etc.) oder nur zur Datenablage dienen            |
 
+* Clients
+Ein Client stellt einen Arbeitsort dar. Es kann eine Privatperson, Firma, eine Abteilung oder eine Maschine im Betrieb sein.
+Ein Client kann mehrere Standorte haben. Diese werden unten aufgeführt.
+Jeder Einsatz braucht einen Client und eine Standort, ohne diese kann die Schicht nicht erstellt werden.
+** Model
+#+begin_src json
+{
+  "id": 1,
+  "name": "Medical Carers",
+  "email": "medical@care.ch",
+  "logo": "https://i2.wp.com/files.123freevectors.com/wp-content/uploads/new/signs-symbols/021_medical-symbol-free-vector-l.png?w=800&q=95",
+  "vat_id": "CHE-123.456.789",
+  "color": "#673fb4",
+  "notes": "Medical Care Notes",
+  "inactive": false,
+  "account_id": 1,
+  "user_id": 7,
+  "created_at": "2020-08-31T12:16:59.243Z",
+  "updated_at": "2022-05-25T21:16:00.814Z",
+  "properties": {
+    "bonus_night": "20%",
+    "bonus_expenses": "KM-Entschädigung von 0.70 CHF/km",
+    "bonus_sunday_holiday": "",
+    "bonus_weekend_holiday": ""
+  },
+  "short_name": "MC"
+}
+#+end_src
+
+** Angehängte Entitäten
+Den Clients kann folgendes angehängt werden:
+
+| Model       | Beschreibung                                                                                                                                                       |
+|-------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Tag         | Tags werden verwendet um Qualifikationen und ähnliches anzuhängen. Diese werden ebenfalls an Personen und Schichten angehängt damit das Matching stattfinden kann. |
+| People      | People stellen Personen dar, denen Schichten zugeteilt werden können. Diese werden ebenfalls für das Matching verwendet                                            |
+| Fileuploads | Es können mehrere Files einer Person angehängt werden, welche einerseits von QP verwendet werden (Anzeigebild, Vertrag etc.) oder nur zur Datenablage dienen       |
+| Locations   | Ein Client kann mehrere Standorte haben, dabei kann einer als Hauptstandort ausgewiesen werden (siehe unten)                                                       |
 #  LocalWords:  model id
