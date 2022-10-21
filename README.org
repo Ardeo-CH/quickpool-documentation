@@ -4,6 +4,9 @@ Zur Kommunikation mit dem Server muss stets ein Token (JWT) mitgeschickt werden,
 Es bestehen keine App-Tokens, der Login muss mit den Credentials von existierenden und freigeschalteten Benutzern passieren.
 Wie bei JWT üblich, wird ebenfalls einmalig ein Reset-Token mitgeliefert, welches nach Ablauf der Gültigkeit des Tokens verwendet wird um ein neues Tokenpaar zu erhalten.
 
+** Base URL
+Für die Production Umgebung von QuickPool wird stets die folgende Base URL vorgehängt: =https://api.quickpool.ch/api/v1=
+
 ** CRUD
 Fast alle Models haben zumindest die folgenden REST Endpunkte:
 | Methode | Pfad           | Beschreibung                                                                                                                                                                                  |
@@ -55,7 +58,7 @@ Beispiel:
 #+begin_src js
 joins: ["client","people","tags","location","template", "fileupload"]
 #+end_src
-* Login
+* Login =/auth/login=
 Wie oben erwähnt funktioniert das Login mit Username und Passwort. Daraufhin werden die wichtigen Informationen, wie Tokenpaar und genauere Angaben zur Person zurückgeschickt.
 #+begin_src bash
 curl -XPOST 'https://api.quickpool.ch/api/v1/auth/login' \
@@ -290,7 +293,7 @@ Das Resultat wird in etwa so aussehen:
 
 #+end_src
 
-* People
+* People =/people=
 Eine Person beinhaltet die wichtigen Infos von Personen, welche in QP verwendet werden. Die E-Mail-Adresse der Person ist meistens dieselbe wie diejenige des Users, welcher stets der Person angeknüpft ist,
 das ist allerdings nicht ein muss.
 Personen werden erstellt, damit man die Mitarbeiter der Firma darstellen kann. Dabei wird für jeden Mitarbeiter, egal ob Administrator oder nicht, ein neuer Eintrag erstellt.
@@ -349,7 +352,7 @@ Den Personen kann folgendes angehängt werden:
 | Budget      | Budgets stellen die Arbeitszeit pro Monat/Woche/Tag welche der Person zugeteilt werden soll dar                                                                         |
 | Fileuploads | Es können mehrere Files einer Person angehängt werden, welche einerseits von QP verwendet werden (Anzeigebild, Vertrag etc.) oder nur zur Datenablage dienen            |
 
-* Clients
+* Clients =/clients=
 Ein Client stellt einen Arbeitsort dar. Es kann eine Privatperson, Firma, eine Abteilung oder eine Maschine im Betrieb sein.
 Ein Client kann mehrere Standorte haben. Diese werden unten aufgeführt.
 Jeder Einsatz braucht einen Client und eine Standort, ohne diese kann die Schicht nicht erstellt werden.
@@ -389,7 +392,7 @@ Den Clients kann folgendes angehängt werden:
 | Locations   | Ein Client kann mehrere Standorte haben, dabei kann einer als Hauptstandort ausgewiesen werden (siehe unten)                                                       |
 #  LocalWords:  model id
 
-* Shifts
+* Shifts =/shifts=
 Eine Schicht (oft auch Einsatz) bringt alle vorherig erfassten Stammdaten zusammen und stellt eine Arbeitsperiode dar.
 Schichten können durch verschiedene Stati progressieren:
 
