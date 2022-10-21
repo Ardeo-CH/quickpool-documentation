@@ -58,6 +58,18 @@ Beispiel:
 #+begin_src js
 joins: ["client","people","tags","location","template", "fileupload"]
 #+end_src
+** Anhängen von Entitäten
+Sofern eine Entität mit anderen angereichert werden kann, müssen diese nicht nur über ID mitgegeben werden.
+Es wird ein Objekt erwartet, welches im Optimalfall das ganze Objekt, welches angehängt werden soll enthaltet, oder zumindest die ID drin beinhaltet.
+Das Object muss JSON encoded sein.
+
+#+begin_src json
+{
+...
+   tags: "[{\"id\":17,\"name\":\"Design\",\"description\":null,\"inactive\":false,\"account_id\":1,\"created_at\":\"2020-11-11T13:21:54.985Z\",\"updated_at\":\"2021-01-02T20:42:22.296Z\",\"color\":\"#d55858\",\"icon\":\"gamepad\",\"settings\":{\"show_on_scheduler\":false},\"minutes_per_week\":null},{\"id\":319,\"name\":\"40%\",\"description\":\"\",\"inactive\":false,\"account_id\":1,\"created_at\":\"2022-09-07T11:54:30.148Z\",\"updated_at\":\"2022-09-07T11:54:38.701Z\",\"color\":\"#e62565\",\"icon\":\"percent\",\"settings\":{\"show_on_scheduler\":false},\"minutes_per_week\":800},{\"id\":15,\"name\":\"FT\",\"description\":\"\",\"inactive\":false,\"account_id\":1,\"created_at\":\"2020-10-20T17:19:22.514Z\",\"updated_at\":\"2021-01-02T20:38:34.620Z\",\"color\":\"#3de1a2\",\"icon\":\"linux\",\"settings\":{\"show_on_scheduler\":false},\"minutes_per_week\":null}]"
+...
+}
+#+end_src
 * Login =/auth/login=
 Wie oben erwähnt funktioniert das Login mit Username und Passwort. Daraufhin werden die wichtigen Informationen, wie Tokenpaar und genauere Angaben zur Person zurückgeschickt.
 #+begin_src bash
@@ -293,6 +305,12 @@ Das Resultat wird in etwa so aussehen:
 
 #+end_src
 
+* Refresh =/auth/refresh=
+Sobald das Token abgelaufen ist (default ist 60min) wird die Schnittstelle einen Error werfen, dass man nicht authentifiziert werden kann.
+In diesem Fall muss das Token erneuert werden. Das passiert einmal mit dem =refresh_token= welches man beim Login erhaltet.
+Dieses wird an den Endpunkt geschickt als payload =refresh_token=.
+Die Antwort vom Server wird dann wieder ein Tokenpaar enthalten, welches genau gleich wie das ursprüngliche verwendet werden kann.
+Das Refresh-Token ist einen Monat gültig.
 * People =/people=
 Eine Person beinhaltet die wichtigen Infos von Personen, welche in QP verwendet werden. Die E-Mail-Adresse der Person ist meistens dieselbe wie diejenige des Users, welcher stets der Person angeknüpft ist,
 das ist allerdings nicht ein muss.
