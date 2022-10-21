@@ -1,9 +1,50 @@
 * Generelles
 Die Schnittstelle von QuickPool (QP) basiert fast komplett auf REST mit einer kleinen Ausnahme, welche GraphQL verwendet.
-Zur kommunikation mit dem Server muss stets ein Token (JWT) mitgeschickt werden, welche den Benutzer eindeutig identifiziert.
+Zur Kommunikation mit dem Server muss stets ein Token (JWT) mitgeschickt werden, welche den Benutzer eindeutig identifiziert.
 Es bestehen keine App-Tokens, der Login muss mit den Credentials von existierenden und freigeschalteten Benutzern passieren.
 Wie bei JWT üblich, wird ebenfalls einmalig ein Reset-Token mitgeliefert, welches nach Ablauf der Gültigkeit des Tokens verwendet wird um ein neues Tokenpaar zu erhalten.
 
+** CRUD
+Fast alle Models haben zumindest die folgenden REST Endpunkte:
+| Methode | Pfad         | Beschreibung                                                                                                                                                                                  |
+|---------+--------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| GET     | /<model>     | Gibt einen Index zurück, welcher gefiltert, sortiert, eingegrenzt und paginated ist                                                                                                           |
+| GET     | /<model>/:id | Gibt genau einen Eintrag zurück, sofern man berechtigt ist                                                                                                                                    |
+| POST    | /<model>     | Erstellt einen neuen Eintrag, sofern die Parameter korrekt sind und gibt den kompletten Datensatz zurück                                                                                      |
+| PUT     | /<model>/:id | Führt einen Update auf den Eintrag durch, sofern dieser existiert. Nur Felder, welche übergeben wurden, werden geändert. Gibt den kompletten, aktualisierten Datensatz zurück                 |
+| DELETE  | /<model>/:id | Führt einen Softdelete (inactive -> true) aus, sofern der Datensatz existiert. Mehrere Deletes auf dem gleichen Datensatz haben keinen negativen Effekt. Gibt den kompletten Datensatz zurück |
+
+Wie oben erwähnt wird die Sichtbarkeit durch das Token ermittelt und auch parameterlose Aufrufe auf den Index werden Informationen zurückgeben.
+
+** Queries
+Jede Index Abfrage kann mit einem optionalen Query-Parameter =q= versehen werden, welche es erlaubt auf fast allen Feldern zu filtern.
+Hier ein Beispiel wie man Shifts filtern kann:
+#+begin_src json
+{
+  "clients": { "id": [1] },
+  "status": ["unassigned", "assigned"],
+  "tags": { "id": [319] },
+  "people": { "id": [5] },
+  "inactive": false
+}
+#+end_src
+
+Zusätzlich können folgende Query Parameter mitgegeben werden
+| Parameter | Beispiel               | Funktion                                                                |
+|-----------+------------------------+-------------------------------------------------------------------------|
+| sort      | ={"start_date":"asc"}= | Gibt an, nach welcher Spalte sortiert werden soll                       |
+| limit     | =10=                   | Gibt an, wie viele Einträge pro Seite angezeigt werden sollen           |
+| page      | =1=                    | Gibt an, welche Seite geladen wird, wobei das Limit berücksichtigt wird |
+
+** Filtern nach Zeiträumen
+Bei Schichten und Verfügbarkeiten kann zusätzlich zu den anderen Queries noch ein Zeitraum angegeben werden, welcher ebenfalls berücksichtigt wird. Zu beachten ist, dass die Zeiten in UTC übergeben werden.
+| Parameter | Beispiel                 |
+|-----------+--------------------------|
+| from      | 2022-10-16T22:00:00.000Z |
+| until     | 2022-10-23T21:59:59.999Z |
+
+Das Matching funktioniert so, dass alle Einträge geliefert werden, welche auch nur teilweise vom Zeitraum überlappt werden.
+Das Startdatum muss ausserdem vor dem Enddatum liegen.
 * Login
 Wie oben erwähnt funktioniert das Login mit Username und Passwort. Daraufhin werden die wichtigen Informationen, wie Tokenpaar und genauere Angaben zur Person zurückgeschickt.
 #+begin_src bash
@@ -13,7 +54,7 @@ curl -XPOST 'https://api.quickpool.ch/api/v1/auth/login' \
 --data-urlencode 'password=<yourPW>'
 #+end_src
 
-Das Resultat wird in etwas so aussehen:
+Das Resultat wird in etwa so aussehen:
 
 #+begin_src json
 {
@@ -238,3 +279,19 @@ Das Resultat wird in etwas so aussehen:
 }
 
 #+end_src
+
+* People
+Eine Person beinhaltet die wichtigen Infos von Personen, welche in QP verwendet werden. Die E-Mail-Adresse der Person ist meistens dieselbe wie diejenige des Users, welcher stets der Person angeknüpft ist,
+das ist allerdings nicht ein muss.
+Personen werden erstellt, damit man die Mitarbeiter der Firma darstellen kann. Dabei wird für jeden Mitarbeiter, egal ob Administrator oder nicht, ein neuer Eintrag erstellt.
+
+Den Personen kann folgendes angehängt werden:
+
+| Model       | Beschreibung                                                                                                                                                            |
+|-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Tag         | Tags werden verwendet um Qualifikationen und ähnliches anzuhängen. Diese werden danach ebenfalls an Kunden und Schichten angehängt damit das Matching stattfinden kann. |
+| Client      | Clients stellen die Kunden oder generell die Arbeitsbereiche dar, an denen Schichten zugeteilt werden können. Diese werden ebenfalls für das Matching verwendet         |
+| Budget      | Budgets stellen die Arbeitszeit pro Monat/Woche/Tag welche der Person zugeteilt werden soll dar                                                                         |
+| Fileuploads | Es können mehrere Files einer Person angehängt werden, welche einerseits von QP verwendet werden (Anzeigebild, Vertrag etc.) oder nur zur Datenablage dienen            |
+
+#  LocalWords:  model id
