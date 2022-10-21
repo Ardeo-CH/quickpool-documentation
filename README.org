@@ -45,6 +45,16 @@ Bei Schichten und Verfügbarkeiten kann zusätzlich zu den anderen Queries noch 
 
 Das Matching funktioniert so, dass alle Einträge geliefert werden, welche auch nur teilweise vom Zeitraum überlappt werden.
 Das Startdatum muss ausserdem vor dem Enddatum liegen.
+
+** Joins
+Um Informationen, über angehängte Entitäten zu erhalten, kann ein Join ausgeführt werden. Das wird die entsprechende Entität in der Antwort
+anhängen.
+In der Regel ist es so, dass jedes Feld, welches mit =_id= aufhört (z.B. =client_id=) verwendet werden kann um zu joinen. Dabei muss der
+Teil OHNE =_id= in das =joins= Array mitgegeben und als Queryparameter angehängt werden.
+Beispiel:
+#+begin_src js
+joins: ["client","people","tags","location","template", "fileupload"]
+#+end_src
 * Login
 Wie oben erwähnt funktioniert das Login mit Username und Passwort. Daraufhin werden die wichtigen Informationen, wie Tokenpaar und genauere Angaben zur Person zurückgeschickt.
 #+begin_src bash
@@ -378,3 +388,113 @@ Den Clients kann folgendes angehängt werden:
 | Fileuploads | Es können mehrere Files einer Person angehängt werden, welche einerseits von QP verwendet werden (Anzeigebild, Vertrag etc.) oder nur zur Datenablage dienen       |
 | Locations   | Ein Client kann mehrere Standorte haben, dabei kann einer als Hauptstandort ausgewiesen werden (siehe unten)                                                       |
 #  LocalWords:  model id
+
+* Shifts
+Eine Schicht (oft auch Einsatz) bringt alle vorherig erfassten Stammdaten zusammen und stellt eine Arbeitsperiode dar.
+Schichten können durch verschiedene Stati progressieren:
+
+| Status       | Beschreibung                                                                                                                        |
+|--------------+-------------------------------------------------------------------------------------------------------------------------------------|
+| =unassigned= | Die Schicht hat keine zugewiesene Person, oder die zugewiesene Person wurde wieder entfernt                                         |
+| =assigned=   | Die Schicht ist zugewiesen aber noch nicht von der Person bestätigt                                                                 |
+| =confirmed=  | Die Schicht wurde von der Person bestätigt. Accounts können so eingestellt werden, dass die Schichten automatisch bestätigt werden. |
+| =rejected=   | Die Schicht wurde von der Person in der App abgelehnt und muss neu zugewiesen werden.                                               |
+| =submitted=  | Die Schicht wurde von der Person abgearbeitet und zur Kontrolle markiert                                                            |
+| =approved=   | Die Schicht wurde vom Admin bearbeitet und wird so gespeichert. Sie kann per GUI nicht mehr verändert werden.                       |
+| =declined=   | Die Schicht wurde vom Admin abgelehnt                                                                                               |
+
+** Model
+#+begin_src json
+{
+  "id": 325,
+  "start_date": "2021-01-13T20:00:00.000Z",
+  "end_date": "2021-01-14T06:00:00.000Z",
+  "notes": "",
+  "inactive": false,
+  "nr_of_required_people": 1,
+  "file_url": null,
+  "public": false,
+  "status": "open",
+  "account_id": 3,
+  "client_id": 9,
+  "location_id": 20,
+  "user_id": 55,
+  "created_at": "2021-01-13T13:58:00.457Z",
+  "updated_at": "2021-06-16T10:15:21.399Z",
+  "name": "Morgenschicht",
+  "is_template": true,
+  "properties": null,
+  "silent": false,
+  "weekly_template_id": null,
+  "project_id": null,
+  "fileupload_id": null,
+  "custom_values": {
+  },
+  "visible": "visible",
+  "people": [
+    {
+      "id": 53,
+      "avatar": "https://api.quickpool.ch/api/v1/s3/show/powerpeople/public/avatars/171be919-3bdd-4d10-a1ea-bf20e02e2249-Rectangle-Copy-3.png",
+      "first_name": "Olivia",
+      "last_name": "Brown",
+      "email": "olivia.brown@powerpeople.ch",
+      "date_of_birth": null,
+      "gender": "female",
+      "mobile": "+41 79 123 45 72",
+      "street_name": null,
+      "house_number": null,
+      "address_details": null,
+      "postal_code": null,
+      "city": null,
+      "country": null,
+      "nationality": null,
+      "residence_permit": null,
+      "type_of_salary": null,
+      "hourly_rate": null,
+      "salary": null,
+      "color": "#ff2eee",
+      "admin": false,
+      "IBAN": null,
+      "account_id": 3,
+      "user_id": 60,
+      "notes": "",
+      "created_at": "2020-11-26T13:08:08.632Z",
+      "updated_at": "2021-07-28T14:16:15.446Z",
+      "inactive": false,
+      "marital_status": null,
+      "nr_of_kids": null,
+      "religion": null,
+      "entrance_date": null,
+      "ahv_number": null,
+      "bank_name": null,
+      "budget_id": null,
+      "custom_values": {
+      },
+      "short_name": ""
+    }
+  ],
+  "client": {
+    "id": 9,
+    "name": "Kunde C",
+    "email": "info@ost.ch",
+    "logo": "https://api.quickpool.ch/api/v1/s3/show/powerpeople/public/logos/99c48df0-88f6-4fee-9d12-cc507af26a2b-customer_c.png",
+    "vat_id": "",
+    "color": "#ed0c72",
+    "notes": "",
+    "inactive": false,
+    "account_id": 3,
+    "user_id": 66,
+    "created_at": "2020-11-26T13:23:29.149Z",
+    "updated_at": "2021-09-07T14:00:30.422Z",
+    "properties": {
+      "bonus_night": "",
+      "bonus_expenses": "",
+      "bonus_sunday_holiday": "",
+      "bonus_weekend_holiday": ""
+    },
+    "short_name": ""
+  },
+  "tags": []
+}
+
+#+end_src
