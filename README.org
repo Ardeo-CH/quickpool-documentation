@@ -1,5 +1,5 @@
 * Generelles
-Die Schnittstelle von QuickPool (QP) basiert fast komplett auf REST mit einer kleinen Ausnahme, welche GraphQL verwendet.
+Die Schnittstelle von QuickPool (QP) basiert komplett auf REST.
 Zur Kommunikation mit dem Server muss stets ein Token (JWT) mitgeschickt werden, welche den Benutzer eindeutig identifiziert.
 Es bestehen keine App-Tokens, der Login muss mit den Credentials von existierenden und freigeschalteten Benutzern passieren.
 Wie bei JWT üblich, wird ebenfalls einmalig ein Reset-Token mitgeliefert, welches nach Ablauf der Gültigkeit des Tokens verwendet wird um ein neues Tokenpaar zu erhalten.
